@@ -1,6 +1,7 @@
 import streamlit as st
 import random
-import string
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Inline CSS for background image and styling
 st.markdown(
@@ -34,7 +35,7 @@ st.markdown(
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         border-radius: 10px;
         margin: 10px auto;
-        width: 110%;
+        width: 90%;
         max-width: 1200px;
     }
 
@@ -181,27 +182,87 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Main Content
-st.title("🔄 Pattern-Based Password Generator")
+st.title("📱 Mobile Pattern Password Generator")
 
-def generate_pattern_password(length=8):
-    pattern = []
-    for i in range(length):
-        if i % 4 == 0:
-            pattern.append(random.choice(string.ascii_uppercase))  # Uppercase
-        elif i % 4 == 1:
-            pattern.append(random.choice(string.ascii_lowercase))  # Lowercase
-        elif i % 4 == 2:
-            pattern.append(random.choice(string.digits))         # Digits
-        else:
-            pattern.append(random.choice(string.punctuation))    # Special characters
-    return ''.join(pattern)
+def generate_pattern_password():
+    # Define the grid (3x3 grid for mobile pattern)
+    grid = [
+        ["1", "2", "3"],
+        ["4", "5", "6"],
+        ["7", "8", "9"]
+    ]
 
-length = st.slider("Select password length", 8, 20, 12)
-if st.button("Generate Pattern Password"):
-    password = generate_pattern_password(length)
+    # Randomly select a pattern length (minimum 4 dots)
+    pattern_length = random.randint(4, 9)
+
+    # Start from a random point
+    start_row = random.randint(0, 2)
+    start_col = random.randint(0, 2)
+    pattern = [grid[start_row][start_col]]
+
+    # Generate the pattern
+    for _ in range(pattern_length - 1):
+        # Find possible moves
+        possible_moves = []
+        for dr in [-1, 0, 1]:
+            for dc in [-1, 0, 1]:
+                if dr == 0 and dc == 0:
+                    continue  # Skip the current position
+                new_row = start_row + dr
+                new_col = start_col + dc
+                if 0 <= new_row < 3 and 0 <= new_col < 3:
+                    if grid[new_row][new_col] not in pattern:
+                        possible_moves.append((new_row, new_col))
+
+        # If no possible moves, break
+        if not possible_moves:
+            break
+
+        # Randomly select a move
+        start_row, start_col = random.choice(possible_moves)
+        pattern.append(grid[start_row][start_col])
+
+    return pattern
+
+def plot_pattern(pattern):
+    # Map pattern to coordinates
+    coords = {
+        "1": (0, 0), "2": (1, 0), "3": (2, 0),
+        "4": (0, 1), "5": (1, 1), "6": (2, 1),
+        "7": (0, 2), "8": (1, 2), "9": (2, 2),
+    }
+
+    # Extract x and y coordinates
+    x = [coords[p][0] for p in pattern]
+    y = [coords[p][1] for p in pattern]
+
+    # Plot the grid
+    fig, ax = plt.subplots(figsize=(4, 4))
+    ax.set_xlim(-0.5, 2.5)
+    ax.set_ylim(-0.5, 2.5)
+    ax.set_xticks([0, 1, 2])
+    ax.set_yticks([0, 1, 2])
+    ax.grid(True)
+
+    # Plot the pattern
+    ax.plot(x, y, marker="o", markersize=20, linestyle="-", color="blue", linewidth=3)
+
+    # Hide axis labels
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+
+    return fig
+
+if st.button("Generate Mobile Pattern Password"):
+    password = generate_pattern_password()
     st.markdown(f"""
     <div class="glass">
         <h3>Generated Password:</h3>
-        <p style="font-size: 24px; font-weight: bold;">{password}</p>
+        <p style="font-size: 24px; font-weight: bold;">{"-".join(password)}</p>
     </div>
     """, unsafe_allow_html=True)
+
+    # Display the pattern diagram
+    st.write("### Pattern Diagram:")
+    fig = plot_pattern(password)
+    st.pyplot(fig)
