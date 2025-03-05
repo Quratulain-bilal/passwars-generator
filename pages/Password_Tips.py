@@ -32,7 +32,7 @@ st.markdown(
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         border-radius: 10px;
         margin: 10px auto;
-        width: 90%;
+        width: 110%;
         max-width: 1200px;
     }
 
