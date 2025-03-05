@@ -115,6 +115,23 @@ st.markdown(
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
     }
 
+    /* List Styling (Why Choose This App?) */
+    .glass ul {
+        list-style-type: none; /* Remove bullet points */
+        padding-left: 0; /* Remove default padding */
+    }
+
+    .glass ul li {
+        color: white;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #ffffff, #e0e0e0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        margin-bottom: 10px; /* Space between list items */
+    }
+
     /* Glass Background for Text Containers */
     .text-glass {
         background: rgba(255, 255, 255, 0.2);
